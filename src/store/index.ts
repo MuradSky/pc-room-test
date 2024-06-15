@@ -1,0 +1,1 @@
+export { useRootStore } from "./useRootStore";

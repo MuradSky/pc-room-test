@@ -1,0 +1,17 @@
+.menu {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid rgba($color: #000, $alpha: 0.3);
+}
+
+.btns {
+    padding: 5px 10px;
+    background-color: #597ef7;
+    border-radius: 6px;
+
+    button {
+        font-size: 12px;
+        height: auto;
+        background-color: #fff !important;
+    }
+}
