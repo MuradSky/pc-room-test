@@ -9,7 +9,7 @@ import { TablesItem } from 'store/tables/types'
 import styles from './RoomCanvas.module.scss'
 
 export const RoomCanvas = ()=> {
-    const { selectRoomId, rooms, tables, addTable, addSelectTableId, addEntity } = useRootStore(store => store)
+    const { selectRoomId, rooms, tables, addTable, addSelectTableId } = useRootStore(store => store)
     const [currentRoom, setCurrentRoom] = useState<Room | null>(null)
     const [currentTables, setCurrentTables] = useState<TablesItem | null>(null)
     const [isOpenModal, setIsOpenModal] = useState(false)
@@ -19,16 +19,16 @@ export const RoomCanvas = ()=> {
         setCurrentTables(tables.find((item: TablesItem) => item.roomId === selectRoomId) || null)
     }, [selectRoomId, rooms, tables, setCurrentRoom, setCurrentTables])
 
-    const createEntity = (entity: string)=> {
-        addEntity({
-            roomId: selectRoomId,
-            tableId: currentTables?.selectTableId || null,
-            entity: {
-                id: uuidv4(),
-                name: entity
-            }
-        })
-    }
+    // const createEntity = (entity: string)=> {
+    //     addEntity({
+    //         roomId: selectRoomId,
+    //         tableId: currentTables?.selectTableId || null,
+    //         entity: {
+    //             id: uuidv4(),
+    //             name: entity
+    //         }
+    //     })
+    // }
 
     const tableCreate = (data: any)=> {
         addTable({
@@ -50,7 +50,6 @@ export const RoomCanvas = ()=> {
     const onClose = ()=> setIsOpenModal(false)
     const onOpen = ()=> setIsOpenModal(true)
 
-    console.log(currentTables)
     return (
         <div className={styles.block}>
             <div className={styles.menu}>
@@ -58,7 +57,7 @@ export const RoomCanvas = ()=> {
                     openTableModal={onOpen}
                     isTabaleDisabled={!currentTables?.selectTableId}
                     isRoomDisabled={!currentRoom}
-                    addEntitiy={createEntity}
+                    addEntitiy={tableCreate}
                 />
             </div>
             <Typography.Title>
@@ -68,12 +67,15 @@ export const RoomCanvas = ()=> {
                 {currentTables?.items?.map((item: any) => (
                     <div
                         key={item.id}
-                        className={styles.box}
+                        className={[
+                            styles.box,
+                            currentTables?.selectTableId === item.id ? styles.is_active : ''
+                        ].join(' ')}
                         onClick={selectedTable(item.id)}
-                        style={{ backgroundColor: currentTables?.selectTableId === item.id ? 'blue' : '#000' }}
+                        data-active={item.type}
                     >
                         <span>{item.name}</span>
-                        <span>Entity {item.entity.length}</span>
+                        <span>Мест {item.place}</span>
                     </div>
                 ))}
             </div>

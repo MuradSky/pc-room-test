@@ -3,9 +3,10 @@ import { RoomId } from "store/rooms/types"
 export interface TableItemsData {
     id: string,
     name: string,
-    form: string,
-    seat: string,
-    entity: any
+    type: string,
+    place: string | number,
+    count: number,
+    // entity: any
 }
 
 export interface AddEntityType {

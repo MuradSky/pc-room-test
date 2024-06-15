@@ -9,7 +9,13 @@ import {
 } from "./middlewares";
 
 export const createTablesSlice: StateCreator<TablesState> = (set, get)=> ({
-    tables: [],
+    tables: [
+        {
+            roomId: '1',
+            selectTableId: null,
+            items: []
+        }
+    ],
     selectTableId: null,
 
     addRoomById(id) {

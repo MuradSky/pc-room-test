@@ -8,7 +8,8 @@
 }
 
 .wrap {
-    background-color: #fafafa;
+    border-radius: 10px;
+    background-color: #f1f1f1;
     min-height: 500px;
     padding: 20px;
 
@@ -17,13 +18,29 @@
     gap: 20px;
 }
 
-.box {
+div.box {
     height: 100px;
-    background: #000;
+    background-color: #555;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #fff;
     flex-direction: column;
+
+    &.is_active {
+        background-color: #209801 !important;
+    }
+
+    &[data-active="PC"] {
+        background-color: #0064b5;
+    }
+
+    &[data-active="PS"] {
+        background-color: #a9b500;
+    }
+
+    &[data-active="VR"] {
+        background-color: #b52a00;
+    }
 }

@@ -32,7 +32,13 @@ type TAddTable = (roomId: string, data: TableItemsData, { tables }: TReturnTable
 export const addTableMiddleware = (...[roomId, data, { tables }]: Parameters<TAddTable>): TReturnTablesType=> {
     const index = tables.findIndex((item: TablesItem) => item.roomId === roomId)
     const filtered: any = tables.find((item: TablesItem) => item.roomId === roomId)
-    filtered.items = [...filtered?.items, {...data, entity: [] }]
+    const item: any = filtered.items.find((item: any) => item.type === data.type)
+    const count = item ? item.count+1 : 1
+    filtered.items = [...filtered?.items, {
+        ...data,
+        count: count,
+        name: data.name+' '+count,
+    }]
     tables[index] = filtered
     return {
         tables,

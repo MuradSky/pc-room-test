@@ -1,11 +1,11 @@
 import { RoomCanvas } from "components/room-canvas"
-import { SideMenu } from "components/sidemenu"
+// import { SideMenu } from "components/sidemenu"
 
 function App() {
 	return (
 		<div className="container">
 			<div className="wrap">
-				<SideMenu />
+				{/* <SideMenu /> */}
 				<RoomCanvas />
 			</div>
 		</div>
