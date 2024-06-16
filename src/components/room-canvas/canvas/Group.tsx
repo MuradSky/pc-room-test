@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import * as d3 from "d3"
 import { ISvgObjectProps } from "./types"
 
@@ -55,10 +55,11 @@ const VRTable = ({ name }: { name: string })=> {
     )
 }
 
-export const Group = ({ data, svg, changePosition }: ISvgObjectProps)=> {
+export const Group = ({ data, changePosition }: ISvgObjectProps)=> {
+    const groupRef = useRef<any>()
     useEffect(()=> {
-        if (svg) {
-            const box = svg.node().select(`[data-group-id="${data.id}"]`)
+        if (groupRef.current) {
+            const box = d3.select(groupRef.current)
             let startX = +box.attr("x")
             let startY = +box.attr("y")
             let boxX = startX
@@ -97,7 +98,7 @@ export const Group = ({ data, svg, changePosition }: ISvgObjectProps)=> {
                 .on('end', draggend)
             )
         }
-    }, [svg])
+    }, [])
 
     const children = (
         data.type.toLowerCase() === 'ps' ? <PSTable name={data.name} /> :
@@ -106,7 +107,7 @@ export const Group = ({ data, svg, changePosition }: ISvgObjectProps)=> {
     )
 
     return (
-        <g data-group-id={data.id} x={data.x} y={data.y} transform={`translate(${data.x}, ${data.y})`}>
+        <g ref={groupRef} data-group-id={data.id} x={data.x} y={data.y} transform={`translate(${data.x}, ${data.y})`}>
             {children}
         </g>
     )

@@ -2,7 +2,7 @@ import { TableItemsData } from "store/tables/types"
 
 export interface ISvgObjectProps {
     data: TableItemsData,
-    svg: any,
+    svg?: any,
     changePosition: ()=> void
 }
 

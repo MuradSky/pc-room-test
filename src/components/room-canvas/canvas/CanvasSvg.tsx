@@ -52,7 +52,6 @@ export const CanvasSvg = ()=> {
                     {data?.map((item: DataCollection)=> (
                         <Group
                             key={item.id}
-                            svg={svgRef.current}
                             data={item}
                             changePosition={changePosition}
                         />
