@@ -6,7 +6,8 @@ export interface TableItemsData {
     type: string,
     place: string | number,
     count: number,
-    // entity: any
+    x: number,
+    y: number,
 }
 
 export interface AddEntityType {
@@ -31,4 +32,5 @@ export interface TablesState {
     addTable: (data: any) => void,
     addSelectTableId: (roomId: RoomId, id: string)=> void
     addEntity: (data: AddEntityType) => void
+    savePositions: (data: TablesItem[])=> void
 }

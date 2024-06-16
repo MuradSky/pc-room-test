@@ -11,8 +11,12 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.3.7",
+    "@types/d3": "^7.4.3",
     "@types/uuid": "^9.0.8",
     "antd": "^5.18.0",
+    "d3": "^7.9.0",
+    "gojs": "^3.0.4",
+    "gojs-react": "^1.1.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sass": "^1.77.4",

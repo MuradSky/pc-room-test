@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid"
 import { RoomId } from "store/rooms/types"
 import { TableItemsData, TablesItem } from "./types"
 
@@ -33,12 +34,23 @@ export const addTableMiddleware = (...[roomId, data, { tables }]: Parameters<TAd
     const index = tables.findIndex((item: TablesItem) => item.roomId === roomId)
     const filtered: any = tables.find((item: TablesItem) => item.roomId === roomId)
     const item: any = filtered.items.find((item: any) => item.type === data.type)
-    const count = item ? item.count+1 : 1
-    filtered.items = [...filtered?.items, {
+    const center = (window.innerWidth / 2) - 50
+
+    const createObject = (count: number)=> ({
         ...data,
+        id: uuidv4(),
         count: count,
         name: data.name+' '+count,
-    }]
+        x: center,
+        y: 350
+    })
+
+    if (!item) {
+        filtered.items = [...filtered?.items, createObject(1)]
+    } else {
+        item.count++
+        filtered.items = [...filtered?.items, createObject(item.count)]
+    }
     tables[index] = filtered
     return {
         tables,
@@ -84,3 +96,12 @@ export const addEntityMiddleware = (...[data, { tables }]: Parameters<TAddEntity
         tables
     }
 }
+
+// type TPositionState = (data: any, { tables }: TReturnTablesType)=> TReturnTablesType
+
+// export const savePositionsStateMiddleware = (...[data, { tables }]: Parameters<TPositionState>): TReturnTablesType=> {
+
+//     return {
+//         tables
+//     }
+// }
