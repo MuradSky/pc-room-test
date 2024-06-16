@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react"
+import { useEffect } from "react"
 import * as d3 from "d3"
 import { ISvgObjectProps } from "./types"
 
@@ -55,16 +55,16 @@ const VRTable = ({ name }: { name: string })=> {
     )
 }
 
-export const Group = ({ data, changePosition }: ISvgObjectProps)=> {
-    const groupRef = useRef<any>()
+export const Group = ({ data, svg, changePosition }: ISvgObjectProps)=> {
     useEffect(()=> {
-        if (groupRef.current) {
-            const box = d3.select(groupRef.current)
+        if (svg) {
+            const svgRoot = d3.select(svg)
+            const box = svgRoot.select(`g[data-group-id="${data.id}"]`)
             let startX = +box.attr("x")
             let startY = +box.attr("y")
             let boxX = startX
             let boxY = startX
-    
+
             function dragStart(event: any) {
                 box.attr('stroke', 'black')
                 box.raise()
@@ -73,13 +73,13 @@ export const Group = ({ data, changePosition }: ISvgObjectProps)=> {
                 boxX = +box.attr('x')
                 boxY = +box.attr('y')
             }
-    
+
             function dragging(event: any) {
                 const dx = startX - event.x
                 const dy = startY - event.y
                 startX = event.x
                 startY = event.y
-    
+
                 box.attr('x', boxX - dx)
                 box.attr('y', boxY - dy)
                 box.attr('transform', `translate(${(boxX - dx)}, ${(boxY - dy)})`)
@@ -87,18 +87,14 @@ export const Group = ({ data, changePosition }: ISvgObjectProps)=> {
                 boxY = +box.attr('y')
                 changePosition()
             }
-    
+
             function draggend() {
                 box.attr('stroke', null)
             }
-    
-            box.call(d3.drag()
-                .on('start', dragStart)
-                .on('drag', dragging)
-                .on('end', draggend)
-            )
+            // @ts-ignore
+            box.call(d3.drag().on('start', dragStart).on('drag', dragging).on('end', draggend))
         }
-    }, [])
+    }, [svg])
 
     const children = (
         data.type.toLowerCase() === 'ps' ? <PSTable name={data.name} /> :
@@ -107,7 +103,7 @@ export const Group = ({ data, changePosition }: ISvgObjectProps)=> {
     )
 
     return (
-        <g ref={groupRef} data-group-id={data.id} x={data.x} y={data.y} transform={`translate(${data.x}, ${data.y})`}>
+        <g data-group-id={data.id} x={data.x} y={data.y} transform={`translate(${data.x}, ${data.y})`}>
             {children}
         </g>
     )

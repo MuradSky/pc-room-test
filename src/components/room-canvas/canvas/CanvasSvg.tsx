@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import * as d3 from "d3"
 import { useRootStore } from "store"
 import { DataCollection } from "./types"
@@ -9,17 +9,11 @@ export const CanvasSvg = ()=> {
     const [isChangePosition, setIsChangePosition] = useState(false)
     const svgRef = useRef<any>(null)
     const { tables, savePositions } = useRootStore(state => state)
-
-    useEffect(()=> {
-        if (svgRef) {
-            svgRef.current = d3.select(svgRef.current)
-        }
-    }, [svgRef])
-
     const changePosition = ()=> setIsChangePosition(true)
 
     const saveState =()=> {
-        const children = svgRef.current.node().selectAll('g[data-group-id]').nodes()
+        const svgRoot = d3.select(svgRef.current)
+        const children = svgRoot.selectAll('g[data-group-id]').nodes()
         const tData = tables[0].items
         if (tData) {
             const cloned = [...tData]
@@ -36,12 +30,10 @@ export const CanvasSvg = ()=> {
                 items: updateData
             }])
         }
-
         setIsChangePosition(false)
     }
 
     const data = tables[0].items
-
     return (
         <div>
             <Flex justify="end" style={{ transform: 'translateY(-50px)', marginBottom: '-32px' }}>
@@ -53,6 +45,7 @@ export const CanvasSvg = ()=> {
                         <Group
                             key={item.id}
                             data={item}
+                            svg={svgRef.current}
                             changePosition={changePosition}
                         />
                     ))}
