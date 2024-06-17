@@ -42,7 +42,8 @@ export const addTableMiddleware = (...[roomId, data, { tables }]: Parameters<TAd
         count: count,
         name: data.name+' '+count,
         x: center,
-        y: 350
+        y: 350,
+        r: 0
     })
 
     if (!item) {

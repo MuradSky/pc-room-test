@@ -42,6 +42,7 @@ export const RoomCanvas = ()=> {
             <Typography.Title>
                 {currentRoom?.title || 'Создай новую комнату'}
             </Typography.Title>
+
             <CanvasSvg />
 
             <CreateTable

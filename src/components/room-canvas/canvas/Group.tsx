@@ -1,90 +1,52 @@
 import { useEffect } from "react"
 import * as d3 from "d3"
+import { Tables } from "./Tables"
 import { ISvgObjectProps } from "./types"
+import style from "./CanvasSvg.module.scss"
 
-const PCTable = ({ name }: { name: string })=> {
-    return (
-        <>
-            <g>
-                <rect width={150} height={100} fill="#a86732" />
-                <text x={60} y={80} fontSize={20}>{name}</text>
-            </g>
-            <g>
-                <circle cx={75} cy={0} r={32} fill="#32a852"/>
-                <text x={70} y={10} fontSize={24}>1</text>
-            </g>
-        </>
-    )
-}
-
-const PSTable = ({ name }: { name: string })=> {
-    return (
-        <>
-            <g>
-                <rect width={200} height={100} fill="#a8a432" />
-                <text x={80} y={80} fontSize={20}>{name}</text>
-            </g>
-            <g>
-                <circle cx={50} cy={0} r={32} fill="#32a852"/>
-                <text x={45} y={10} fontSize={24}>1</text>
-            </g>
-            <g>
-                <circle cx={150} cy={0} r={32} fill="#32a852"/>
-                <text x={143} y={10} fontSize={24}>2</text>
-            </g>
-        </>
-    )
-}
-
-const VRTable = ({ name }: { name: string })=> {
-    return (
-        <>
-            <g>
-                <circle cx={0} cy={80} r={80} fill="#3253a8"/>
-                <text x={-20} y={85} fontSize={20}>{name}</text>
-            </g>
-            <g>
-                <circle cx={0} cy={0} r={32} fill="#32a852"/>
-                <text x={-5} y={10} fontSize={24}>1</text>
-            </g>
-            <g>
-                <circle cx={0} cy={150} r={32} fill="#32a852"/>
-                <text x={-5} y={160} fontSize={24}>2</text>
-            </g>
-        </>
-    )
-}
 
 export const Group = ({ data, svg, changePosition }: ISvgObjectProps)=> {
     useEffect(()=> {
         if (svg) {
+            let isRotate = false
             const svgRoot = d3.select(svg)
             const box = svgRoot.select(`g[data-group-id="${data.id}"]`)
-            let startX = +box.attr("x")
-            let startY = +box.attr("y")
+            let startX = +box.attr("data-x")
+            let startY = +box.attr("data-y")
             let boxX = startX
             let boxY = startX
 
-            function dragStart(event: any) {
-                box.attr('stroke', 'black')
-                box.raise()
-                startX = event.x
-                startY = event.y
-                boxX = +box.attr('x')
-                boxY = +box.attr('y')
-            }
-
-            function dragging(event: any) {
+            function calcDragget(event: any): any {
                 const dx = startX - event.x
                 const dy = startY - event.y
                 startX = event.x
                 startY = event.y
 
-                box.attr('x', boxX - dx)
-                box.attr('y', boxY - dy)
+                box.attr('data-x', boxX - dx)
+                box.attr('data-y', boxY - dy)
+                boxX = +box.attr('data-x')
+                boxY = +box.attr('data-y')
+
+                return {
+                    dx,
+                    dy
+                }
+            }
+
+            function dragStart(event: any) {
+                box.attr('stroke', '#009BDC')
+                box.attr('stroke-width', '0.3px')
+                box.raise()
+                startX = event.x
+                startY = event.y
+                boxX = +box.attr('data-x')
+                boxY = +box.attr('data-y')
+            }
+
+            function dragging(event: any) {
+                if (isRotate) return
+                const {dx, dy} = calcDragget(event)
                 box.attr('transform', `translate(${(boxX - dx)}, ${(boxY - dy)})`)
-                boxX = +box.attr('x')
-                boxY = +box.attr('y')
                 changePosition()
             }
 
@@ -93,18 +55,41 @@ export const Group = ({ data, svg, changePosition }: ISvgObjectProps)=> {
             }
             // @ts-ignore
             box.call(d3.drag().on('start', dragStart).on('drag', dragging).on('end', draggend))
+
+             // @ts-ignore
+            box.select('#g-rotate').call(d3.drag().on('drag', draggedRotate).on('end', rotateEnd).container(box.node()))
+
+            function rotateEnd() {
+                isRotate = false
+            }
+
+            function draggedRotate(event: any) {
+                isRotate=true
+                changePosition()
+                const x = event.x;
+                const y = event.y;
+                let angle;
+                if (x < 0) {
+                  angle = 270 - (Math.atan(y / -x) * 180 / Math.PI);
+                } else {
+                  angle = 90 + (Math.atan(y / x) * 180 / Math.PI);
+                }
+                box.select('#g-inner').attr("transform","rotate("+angle+")");
+                box.attr('data-r', angle)
+            }
         }
     }, [svg])
 
-    const children = (
-        data.type.toLowerCase() === 'ps' ? <PSTable name={data.name} /> :
-        data.type.toLowerCase() === 'vr' ? <VRTable name={data.name} /> :
-        <PCTable name={data.name} />
-    )
-
     return (
-        <g data-group-id={data.id} x={data.x} y={data.y} transform={`translate(${data.x}, ${data.y})`}>
-            {children}
+        <g
+            data-group-id={data.id}
+            data-x={data.x}
+            data-y={data.y}
+            data-r={data.r}
+            transform={`translate(${data.x}, ${data.y})`}
+            className={style.group}
+        >
+            <Tables name={data.name} type={data.type} rotate={data.r} />
         </g>
     )
 }

@@ -8,6 +8,7 @@ export interface TableItemsData {
     count: number,
     x: number,
     y: number,
+    r: number,
 }
 
 export interface AddEntityType {
