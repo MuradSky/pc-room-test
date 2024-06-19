@@ -1,0 +1,1 @@
+export { createAreas } from "./createAreas";

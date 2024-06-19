@@ -5,7 +5,9 @@ import {
     addRoomByIdMiddleware,
     addSelectTableIdMiddleware,
     addTableMiddleware,
+    removeDeviceMiddleware,
     removeRoomByIdMiddleware,
+    updateDeviceMiddleware,
 } from "./middlewares";
 
 export const createTablesSlice: StateCreator<TablesState> = (set, get)=> ({
@@ -18,6 +20,12 @@ export const createTablesSlice: StateCreator<TablesState> = (set, get)=> ({
     ],
     selectTableId: null,
 
+    updateData(data) {
+        set(updateDeviceMiddleware(data, get()))
+    },
+    removeDevice(id) {
+        set(removeDeviceMiddleware(id, get()))
+    },
     addRoomById(id) {
         set(addRoomByIdMiddleware(id, get()))
     },
@@ -30,6 +38,7 @@ export const createTablesSlice: StateCreator<TablesState> = (set, get)=> ({
     addSelectTableId(roomId, id) {
         set(addSelectTableIdMiddleware(roomId, id, get()))
     },
+
     addEntity(data: any) {
         set(addEntityMiddleware(data, get()))
     },

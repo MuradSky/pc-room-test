@@ -4,14 +4,48 @@ import { useRootStore } from "store"
 import { DataCollection } from "./types"
 import { Button, Flex } from "antd"
 import { Group } from "./Group"
-import AreaSchema from 'assets/svg/area-schema.svg?react'
 import style from "./CanvasSvg.module.scss"
+import { ContextMenu } from "./ContextMenu"
+import { EditDevice } from "components/modals/edit-device"
 
 export const CanvasSvg = ()=> {
-    const [isChangePosition, setIsChangePosition] = useState(false)
     const svgRef = useRef<any>(null)
-    const { tables, savePositions } = useRootStore(state => state)
+    const [currentDevice, setCurrentDevice] = useState<any>(null)
+    const [openEdit, setOpenEdit] = useState(false)
+    const [menuPos, setMenuPos] = useState<any>(null)
+    const [isChangePosition, setIsChangePosition] = useState(false)
+    const { areas, subAreas, tables, savePositions, removeDevice } = useRootStore(state => state)
+
     const changePosition = ()=> setIsChangePosition(true)
+    const openEditModal = ()=> {
+        setMenuPos(null)
+        setOpenEdit(true)
+    }
+    const closeEditModal = ()=> setOpenEdit(false)
+
+    const handleRemoveDevice = ()=> {
+        removeDevice(currentDevice.id)
+        setCurrentDevice(null)
+        setMenuPos(null)
+    }
+
+    const openMenu = (x: number, y:number, deviceId: string | number)=> {
+        const data = tables[0].items?.find((item: any)=> item.id === deviceId)
+        const areaName = areas.find((item: any) => item.id === data?.areaId)?.name
+        const subAreaName = subAreas.find((item: any) => item.id === data?.subAreaId)?.name
+
+        setMenuPos({ x, y })
+        setCurrentDevice({
+            ...data,
+            areaName,
+            subAreaName,
+        })
+    }
+
+    const closeMenu = ()=> {
+        setMenuPos(null)
+        setCurrentDevice(null)
+    }
 
     const saveState =()=> {
         const svgRoot = d3.select(svgRef.current)
@@ -27,7 +61,6 @@ export const CanvasSvg = ()=> {
                 element.r = +el.getAttribute('data-r')
                 return element
             })
-
             savePositions([{
                 ...tables[0],
                 items: updateData
@@ -37,13 +70,14 @@ export const CanvasSvg = ()=> {
     }
 
     const data = tables[0].items
+
     return (
-        <div>
+        <div className={style.wrapper}>
             <Flex justify="end" style={{ transform: 'translateY(-50px)', marginBottom: '-32px' }}>
-                <Button onClick={saveState} type="primary" disabled={!isChangePosition}>Сохранить изменения</Button>
+                <Button onClick={saveState} type="primary" disabled={!isChangePosition} style={{ marginLeft: 12 }}>Сохранить изменения</Button>
             </Flex>
             <div className={style.block}>
-                <AreaSchema className={style.area}/>
+                {/* <AreaSchema className={style.area}/> */}
                 <svg width={1440-48} height={900} ref={svgRef} className={style.canvas}>
                     {data?.map((item: DataCollection)=> (
                         <Group
@@ -51,9 +85,20 @@ export const CanvasSvg = ()=> {
                             data={item}
                             svg={svgRef.current}
                             changePosition={changePosition}
+                            openMenu={openMenu}
                         />
                     ))}
                 </svg>
+
+                <ContextMenu
+                    data={currentDevice}
+                    pos={menuPos}
+                    removeDevice={handleRemoveDevice}
+                    closeMenu={closeMenu}
+                    openEditModal={openEditModal}
+                />
+
+                <EditDevice isOpen={openEdit} hideModal={closeEditModal} device={currentDevice} />
             </div>
         </div>
     )

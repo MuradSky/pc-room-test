@@ -1,11 +1,37 @@
 .group {
+    &.is_hover {
+        .rotate {
+            opacity: 1;
+        }
+    
+        .pen {
+            opacity: .5;
+        }
+    }
+}
+
+.wrapper {
+    position: relative;
+}
+
+.inner {
+   
+}
+
+.pen {
+    cursor: pointer;
+    opacity: .2;
     &:hover {
-        
+        opacity: 1;
     }
 }
 
 .rotate {
     cursor: pointer;
+    opacity: .6;
+    &:hover {
+        opacity: 1;
+    }
 }
 
 .block {

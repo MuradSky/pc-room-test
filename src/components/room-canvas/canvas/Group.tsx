@@ -5,7 +5,7 @@ import { ISvgObjectProps } from "./types"
 import style from "./CanvasSvg.module.scss"
 
 
-export const Group = ({ data, svg, changePosition }: ISvgObjectProps)=> {
+export const Group = ({ data, svg, changePosition, openMenu }: ISvgObjectProps)=> {
     useEffect(()=> {
         if (svg) {
             let isRotate = false
@@ -53,8 +53,13 @@ export const Group = ({ data, svg, changePosition }: ISvgObjectProps)=> {
             function draggend() {
                 box.attr('stroke', null)
             }
+
             // @ts-ignore
             box.call(d3.drag().on('start', dragStart).on('drag', dragging).on('end', draggend))
+            box.on('contextmenu', function(e) {
+                e.preventDefault()
+                openMenu(e.clientX, e.clientY, data.id)
+            })
 
              // @ts-ignore
             box.select('#g-rotate').call(d3.drag().on('drag', draggedRotate).on('end', rotateEnd).container(box.node()))
@@ -89,7 +94,7 @@ export const Group = ({ data, svg, changePosition }: ISvgObjectProps)=> {
             transform={`translate(${data.x}, ${data.y})`}
             className={style.group}
         >
-            <Tables name={data.name} type={data.type} rotate={data.r} />
+            <Tables rotate={data.r} {...data} />
         </g>
     )
 }

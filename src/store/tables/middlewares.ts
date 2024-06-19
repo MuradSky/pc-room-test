@@ -33,26 +33,17 @@ type TAddTable = (roomId: string, data: TableItemsData, { tables }: TReturnTable
 export const addTableMiddleware = (...[roomId, data, { tables }]: Parameters<TAddTable>): TReturnTablesType=> {
     const index = tables.findIndex((item: TablesItem) => item.roomId === roomId)
     const filtered: any = tables.find((item: TablesItem) => item.roomId === roomId)
-    const item: any = filtered.items.find((item: any) => item.type === data.type)
-    const center = (window.innerWidth / 2) - 50
 
-    const createObject = (count: number)=> ({
+    filtered.items = [...filtered?.items, {
         ...data,
         id: uuidv4(),
-        count: count,
-        name: data.name+' '+count,
-        x: center,
-        y: 350,
+        x: 80,
+        y: 80,
         r: 0
-    })
+    }]
 
-    if (!item) {
-        filtered.items = [...filtered?.items, createObject(1)]
-    } else {
-        item.count++
-        filtered.items = [...filtered?.items, createObject(item.count)]
-    }
     tables[index] = filtered
+
     return {
         tables,
     }
@@ -98,6 +89,36 @@ export const addEntityMiddleware = (...[data, { tables }]: Parameters<TAddEntity
     }
 }
 
+type TRemoveDevice = (id: string, { tables }: TReturnTablesType) => TReturnTablesType
+
+export const removeDeviceMiddleware = (...[id, { tables }]: Parameters<TRemoveDevice>): TReturnTablesType=> {
+    const clone = [...tables]
+    const data = clone[0]
+    data.items = data.items?.filter((item: TableItemsData)=> item.id !== id)
+
+    return {
+        tables: [data]
+    }
+}
+
+type TUpdateDevice = (data: any, { tables }: TReturnTablesType) => TReturnTablesType
+
+export const updateDeviceMiddleware = (...[data, { tables }]: Parameters<TUpdateDevice>): TReturnTablesType=> {
+    const clone = [...tables]
+    const currentData = clone[0]
+    const index = currentData.items?.findIndex((item: TableItemsData) => item.id === data.id)
+    let filtered = {...currentData.items?.find((item: TableItemsData) => item.id === data.id)}
+    const updateData = {
+        ...filtered,
+        ...data
+    }
+
+    // @ts-ignore
+    currentData.items[index] = updateData
+    return {
+        tables: [currentData]
+    }
+}
 // type TPositionState = (data: any, { tables }: TReturnTablesType)=> TReturnTablesType
 
 // export const savePositionsStateMiddleware = (...[data, { tables }]: Parameters<TPositionState>): TReturnTablesType=> {
